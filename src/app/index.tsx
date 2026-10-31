@@ -1,98 +1,17 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
+import React,{useState} from "react";
+import {ActivityIndicator,Pressable,ScrollView,StyleSheet,Text,TextInput,View} from "react-native";
+import {Redirect} from "expo-router";
+import {useAuth} from "@/context/AuthContext";
+import {useBusiness} from "@/context/BusinessContext";
+import Login from "./Account/Login";import SignUp from "./Account/SignUp";
+const ink="#16231d",green="#16734a",muted="#68766e",line="#dce5de",paper="#f5f8f5";
+export default function Index(){
+ const{user,isSignedIn,isLoading,accounts}=useAuth();const{business,loading,addBusiness}=useBusiness();const[signup,setSignup]=useState(false);const[name,setName]=useState("");const[type,setType]=useState<any>("shop");const[error,setError]=useState("");const[currency,setCurrency]=useState("USD");
+ if(isLoading||isSignedIn&&loading)return <View style={s.center}><ActivityIndicator color={green}/><Text style={s.muted}>Loading your business…</Text></View>;
+ if(!isSignedIn||!user||!accounts.length)return signup?<SignUp setDspLoginOrSignup={()=>setSignup(false)} setIsSigningUp={()=>{}}/>:<Login setDspLoginOrSignup={()=>setSignup(true)}/>;
+ if(business)return <Redirect href={"/(tabs)" as any}/>;
+ const create=async()=>{setError("");try{await addBusiness(name,type,currency);}catch(e){setError(e instanceof Error?e.message:"Could not save business. Try again.");}};
+ return <ScrollView contentContainerStyle={s.setup}><Text style={s.brand}>TENGESA</Text><Text style={s.title}>Set up your business</Text><Text style={s.muted}>Your products and sales will be kept under this business.</Text><Text style={s.label}>Business name</Text><TextInput value={name} onChangeText={setName} placeholder="e.g. Mbare Grocery" style={s.input}/><Text style={s.label}>Business type</Text><View style={s.choices}>{(["shop","grocery","canteen","butchery","bar","retail"] as const).map(x=><Pressable key={x} onPress={()=>setType(x)} style={[s.choice,type===x&&s.choiceActive]}><Text style={{color:type===x?green:ink,fontWeight:"600",textTransform:"capitalize"}}>{x}</Text></Pressable>)}</View><Text style={s.label}>Currency</Text><View style={s.choices}>{["USD","ZWL","ZAR"].map(x=><Pressable key={x} onPress={()=>setCurrency(x)} style={[s.choice,currency===x&&s.choiceActive]}><Text style={{color:currency===x?green:ink,fontWeight:"600"}}>{x}</Text></Pressable>)}</View>{error?<Text style={s.error}>{error}</Text>:null}<Pressable onPress={()=>void create()} style={s.button}><Text style={s.buttonText}>Create business</Text></Pressable></ScrollView>;
 }
-
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-});
+export const palette={ink,green,muted,line,paper};
+export const s=StyleSheet.create({center:{flex:1,alignItems:"center",justifyContent:"center",gap:10,backgroundColor:paper},setup:{flexGrow:1,justifyContent:"center",padding:24,gap:12,backgroundColor:paper},brand:{fontSize:14,letterSpacing:3,fontWeight:"800",color:green},title:{fontSize:28,fontWeight:"800",color:ink,marginTop:8},muted:{color:muted,fontSize:14},label:{fontWeight:"700",color:ink,marginTop:10},input:{borderWidth:1,borderColor:line,borderRadius:12,paddingHorizontal:14,paddingVertical:12,backgroundColor:"white",fontSize:16,color:ink},choices:{flexDirection:"row",flexWrap:"wrap",gap:8},choice:{borderWidth:1,borderColor:line,borderRadius:20,paddingHorizontal:14,paddingVertical:10,backgroundColor:"white"},choiceActive:{borderColor:green,backgroundColor:"#e8f4ec"},button:{backgroundColor:green,borderRadius:12,padding:15,alignItems:"center",marginTop:12},buttonText:{color:"white",fontWeight:"800",fontSize:16},error:{color:"#ae3434"}});

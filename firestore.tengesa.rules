@@ -1,0 +1,34 @@
+// MERGE FRAGMENT ONLY. Add the matches inside the existing match /users/{uid}
+// block in the shared Armament ruleset. Do not deploy this file by itself.
+function ownsTengesaBusiness(businessId) {
+  return request.auth != null && request.auth.uid == uid
+    && exists(/databases/$(database)/documents/users/$(uid)/tengesa/businesses/$(businessId))
+    && get(/databases/$(database)/documents/users/$(uid)/tengesa/businesses/$(businessId)).data.ownerId == uid;
+}
+function hasActiveTengesaSubscription() {
+  return exists(/databases/$(database)/documents/users/$(uid)/subscriptions/tengesa)
+    && get(/databases/$(database)/documents/users/$(uid)/subscriptions/tengesa).data.status == 'active'
+    && get(/databases/$(database)/documents/users/$(uid)/subscriptions/tengesa).data.expiresAt > request.time;
+}
+match /tengesa/{collection}/{recordId} {
+  allow read: if request.auth != null && request.auth.uid == uid;
+  allow create, update: if request.auth != null && request.auth.uid == uid
+    && request.resource.data.ownerId == uid
+    && request.resource.data.id == recordId
+    && (collection == 'businesses' || (hasActiveTengesaSubscription() && ownsTengesaBusiness(request.resource.data.businessId)));
+  allow delete: if false;
+}
+// Fynage's current reader ignores sourceApp='tengesa'. Add it to the supported
+// contract there before expecting shared records to appear in the Fynage UI.
+match /financial_ledger/{recordId} {
+  allow read: if request.auth != null && request.auth.uid == uid && resource.data.ownerId == uid;
+  allow create, update: if request.auth != null && request.auth.uid == uid
+    && request.resource.data.ownerId == uid && request.resource.data.id == recordId
+    && request.resource.data.businessId is string
+    && hasActiveTengesaSubscription()
+    && request.resource.data.sourceApp == 'tengesa';
+  allow delete: if false;
+}
+match /subscriptions/{recordId} { allow read: if request.auth != null && request.auth.uid == uid; allow write: if false; }
+match /payment_attempts/{recordId} { allow read: if request.auth != null && request.auth.uid == uid; allow write: if false; }
+match /referral_attribution/{recordId} { allow read: if request.auth != null && request.auth.uid == uid; allow write: if false; }
