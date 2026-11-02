@@ -13,9 +13,11 @@ export type Business = {
   taxNumber?: string;
   receiptFooter?: string;
   status: "active" | "archived";
-  allowNegativeStock: false;
+  allowNegativeStock: boolean;
   createdAt: string;
   updatedAt: string;
+  sourceOwnerId?: string;
+  sharedRole?: "owner" | "admin" | "employee" | "investor";
 };
 
 export type Product = {
@@ -61,6 +63,8 @@ export type Sale = {
   totalMinor: number;
   costOfGoodsMinor: number;
   paymentMethod: PaymentMethod;
+  customerId?: string;
+  customerNameSnapshot?: string;
   amountReceivedMinor: number;
   changeMinor: number;
   status: "completed";
@@ -79,6 +83,18 @@ export type Expense = {
   description: string;
   paymentMethod: PaymentMethod;
   expenseDate: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type RetailCustomer = {
+  id: string;
+  ownerId: string;
+  businessId: string;
+  name: string;
+  phone?: string;
+  notes?: string;
+  active: boolean;
   createdAt: string;
   updatedAt: string;
 };

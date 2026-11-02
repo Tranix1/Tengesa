@@ -59,7 +59,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "node --experimental-strip-types --test tests/*.test.mjs"
+    "test": "node --experimental-strip-types --test tests/retailCalculations.test.mjs",
+    "test:subscription": "firebase emulators:exec --only firestore --project demo-armament-payments \"node --test tests/subscriptionCore.test.mjs\""
   },
   "private": true
 }

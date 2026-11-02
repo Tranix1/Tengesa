@@ -1,10 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {buildDashboard,lineTotals} from "../src/domain/retailCalculations.ts";
+import {sharedLedgerId} from "../src/contracts/armament.ts";
 
 test("sale line revenue and cost preserve cost basis",()=>{
  assert.deepEqual(lineTotals(225,140,3),{revenueMinor:675,costMinor:420});
  assert.throws(()=>lineTotals(100,40,0),/Invalid/);
+});
+
+test("shared ledger identity is retry-safe and store-scoped",()=>{
+ const row={sourceApp:"tengesa",ownerId:"owner",businessId:"store-a",accountId:"store-a",sourceCollection:"sales",sourceDocumentId:"sale-1"};
+ assert.equal(sharedLedgerId(row),sharedLedgerId({...row}));
+ assert.notEqual(sharedLedgerId(row),sharedLedgerId({...row,businessId:"store-b",accountId:"store-b"}));
 });
 test("dashboard separates gross profit from operating expenses and cash",()=>{
  const today=new Date();const iso=today.toISOString();

@@ -2,20 +2,21 @@
 // block in the shared Armament ruleset. Do not deploy this file by itself.
 function ownsTengesaBusiness(businessId) {
   return request.auth != null && request.auth.uid == uid
-    && exists(/databases/$(database)/documents/users/$(uid)/tengesa/businesses/$(businessId))
-    && get(/databases/$(database)/documents/users/$(uid)/tengesa/businesses/$(businessId)).data.ownerId == uid;
+    && exists(/databases/$(database)/documents/users/$(uid)/tengesa/$(businessId))
+    && get(/databases/$(database)/documents/users/$(uid)/tengesa/$(businessId)).data.ownerId == uid;
 }
 function hasActiveTengesaSubscription() {
   return exists(/databases/$(database)/documents/users/$(uid)/subscriptions/tengesa)
     && get(/databases/$(database)/documents/users/$(uid)/subscriptions/tengesa).data.status == 'active'
     && get(/databases/$(database)/documents/users/$(uid)/subscriptions/tengesa).data.expiresAt > request.time;
 }
-match /tengesa/{collection}/{recordId} {
+match /tengesa/{businessId}/{collection}/{recordId} {
   allow read: if request.auth != null && request.auth.uid == uid;
   allow create, update: if request.auth != null && request.auth.uid == uid
+    && collection in ['products', 'sales', 'expenses', 'movements', 'customers']
     && request.resource.data.ownerId == uid
     && request.resource.data.id == recordId
-    && (collection == 'businesses' || (hasActiveTengesaSubscription() && ownsTengesaBusiness(request.resource.data.businessId)));
+    && (collection == 'businesses' || (hasActiveTengesaSubscription() && request.resource.data.businessId == businessId && ownsTengesaBusiness(businessId)));
   allow delete: if false;
 }
 // Fynage's current reader ignores sourceApp='tengesa'. Add it to the supported
