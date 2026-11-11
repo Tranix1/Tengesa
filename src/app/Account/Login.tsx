@@ -24,7 +24,6 @@ import {
 import { AccountType } from '@/types/types';
 import PhoneInput from '@/components/PhoneInput';
 import { trackScreen } from '@/services/analytics/firebaseAnalystics';
-import { useColorScheme } from 'react-native';
 
 import {
   getAuth,
@@ -43,8 +42,6 @@ const Login = ({ setDspLoginOrSignup }: any) => {
     const icon = useThemeColor('icon');
     const accent = useThemeColor('accent');
     const coolGray = useThemeColor('coolGray');
-
-    const colorScheme = useColorScheme();
 
 
     const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -194,7 +191,7 @@ const Login = ({ setDspLoginOrSignup }: any) => {
                 <View style={styles.container}>
                     <Image
                         contentFit="contain"
-                        source={colorScheme === "light" ? require('@/assets/trialogo.svg') : require('@/assets/transix_logo_black_bg.png')}
+                        source={require('@/assets/images/tengesa-brand-icon.png')}
                         style={styles.logo}
                     />
 
@@ -203,7 +200,7 @@ const Login = ({ setDspLoginOrSignup }: any) => {
                             Welcome Back
                         </ThemedText>
                         <ThemedText style={styles.subHeader} color={coolGray}>
-                            Login to continue using Transix
+                            Login to continue using Tengesa
                         </ThemedText>
                     </View>
 

@@ -28,6 +28,8 @@ export type Product = {
   sku: string;
   barcode?: string;
   category: string;
+  categoryId?: string;
+  categoryName?: string;
   description?: string;
   unit: string;
   priceMinor: number;
@@ -71,6 +73,9 @@ export type Sale = {
   soldAt: string;
   createdAt: string;
   updatedAt: string;
+  recordedById?: string;
+  recordedByName?: string;
+  recordedByRole?: string;
 };
 
 export type Expense = {
@@ -85,6 +90,9 @@ export type Expense = {
   expenseDate: string;
   createdAt: string;
   updatedAt: string;
+  recordedById?: string;
+  recordedByName?: string;
+  recordedByRole?: string;
 };
 
 export type RetailCustomer = {
@@ -111,7 +119,12 @@ export type StockMovement = {
   sourceRecordId?: string;
   occurredAt: string;
   createdAt: string;
+  recordedById?: string;
+  recordedByName?: string;
+  recordedByRole?: string;
 };
+
+export type ProductCategory = { id: string; ownerId: string; businessId: string; name: string; createdAt: string };
 
 export type SaleCartLine = { productId: string; quantity: number };
 

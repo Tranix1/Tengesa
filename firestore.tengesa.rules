@@ -13,7 +13,7 @@ function hasActiveTengesaSubscription() {
 match /tengesa/{businessId}/{collection}/{recordId} {
   allow read: if request.auth != null && request.auth.uid == uid;
   allow create, update: if request.auth != null && request.auth.uid == uid
-    && collection in ['products', 'sales', 'expenses', 'movements', 'customers']
+    && collection in ['products', 'sales', 'expenses', 'movements', 'customers', 'categories']
     && request.resource.data.ownerId == uid
     && request.resource.data.id == recordId
     && (collection == 'businesses' || (hasActiveTengesaSubscription() && request.resource.data.businessId == businessId && ownsTengesaBusiness(businessId)));

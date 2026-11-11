@@ -30,7 +30,7 @@ export async function syncRetailOwner(uid:string){
           await saveSharedBusiness(uid,{...data,id:shared.sourceId,ownerId:uid,name:String(data.name??shared.name),currency:String(data.currency??"USD"),type:data.type??"retail",status:data.status??"active",allowNegativeStock:Boolean(data.allowNegativeStock),createdAt:String(data.createdAt??new Date().toISOString()),updatedAt:String(data.updatedAt??new Date().toISOString()),sourceOwnerId:shared.ownerId,sharedRole:shared.role as "owner"|"admin"|"employee"|"investor"});
         }
       }
-      const allowedCollections = shared.role === "employee" ? ["products", "movements"] : ["products", "sales", "expenses", "movements", "customers"];
+      const allowedCollections = shared.role === "employee" ? ["products", "movements", "categories"] : ["products", "sales", "expenses", "movements", "customers", "categories"];
       for(const collectionName of allowedCollections){
         const snapshot=await getDocs(collection(db,"users",shared.ownerId,"tengesa",shared.sourceId,collectionName));
         await mergeRemoteRecords(uid,shared.sourceId,collectionName,snapshot.docs.map(item=>({...item.data(),id:item.id,ownerId:uid,businessId:shared.sourceId})));
@@ -48,7 +48,7 @@ export async function syncRetailOwner(uid:string){
           const registered=await callArmament<{businessId:string}>("registerArmamentBusiness",{sourceApp:"tengesa",sourceId:entry.business_id});
           shared={id:registered.businessId,ownerId:uid,name:"Store",sourceApp:"tengesa",sourceId:entry.business_id,role:"owner"};sharedBusinesses.push(shared);
         }
-        await callArmament("recordArmamentTengesaSale",{businessId:shared.id,sale:{id:sale.id,receiptNumber:sale.receiptNumber,paymentMethod:sale.paymentMethod,customerId:sale.customerId??null,lines:sale.lines.map(line=>({productId:line.productId,quantity:line.quantity}))}});
+        await callArmament("recordArmamentTengesaSale",{businessId:shared.id,sale:{id:sale.id,receiptNumber:sale.receiptNumber,paymentMethod:sale.paymentMethod,customerId:sale.customerId??null,recordedById:sale.recordedById??null,recordedByName:sale.recordedByName??null,recordedByRole:sale.recordedByRole??null,lines:sale.lines.map(line=>({productId:line.productId,quantity:line.quantity}))}});
       }else{
         const data=JSON.parse(entry.payload);
         if(entry.collection_name==="expenses"){
@@ -80,7 +80,7 @@ export async function syncRetailOwner(uid:string){
         await mergeRemoteRecords(uid,"","businesses",businessSnapshot.docs.map(item=>({...item.data(),id:item.id})));
       }
       const sharedRole=String((business as typeof business&{sharedRole?:string}).sharedRole??"owner");
-      const allowedCollections = sharedRole === "employee" ? ["products", "movements"] : ["products", "sales", "expenses", "movements", "customers"];
+      const allowedCollections = sharedRole === "employee" ? ["products", "movements", "categories"] : ["products", "sales", "expenses", "movements", "customers", "categories"];
       for(const collectionName of allowedCollections){
         const snapshot=await getDocs(collection(db,"users",sourceOwnerId,"tengesa",business.id,collectionName));
         await mergeRemoteRecords(uid,business.id,collectionName,snapshot.docs.map(item=>({...item.data(),id:item.id,ownerId:uid,businessId:business.id})));

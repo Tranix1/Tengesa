@@ -34,7 +34,7 @@ export default function SalesTab() {
   const complete = async () => {
     if (!user || !business || busy) return;
     setBusy(true); setError("");
-    try { const sold = await recordSale(user.uid, business.id, business.currency, cart, method, customerId || undefined); setReceipt(sold); setCart([]); setCustomerId(""); await load(); }
+    try { const sold = await recordSale(user.uid, business.id, business.currency, cart, method, customerId || undefined, { id: user.uid, name: user.displayName || user.phoneNumber || "Team member", role: business.sharedRole || "owner" }); setReceipt(sold); setCart([]); setCustomerId(""); await load(); }
     catch (cause) { setError(cause instanceof Error ? cause.message : "Sale could not be completed."); }
     finally { setBusy(false); }
   };

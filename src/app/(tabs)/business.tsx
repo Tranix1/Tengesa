@@ -2,7 +2,7 @@ import FinancialReport from "@/components/FinancialReport";
 import SubscriptionPanel from "@/components/SubscriptionPanel";
 import React, { useCallback, useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, router } from "expo-router";
 import { useAuth } from "@/context/AuthContext";
 import { useBusiness } from "@/context/BusinessContext";
 import { dashboard, listExpenses, recordExpense } from "@/services/retailRepository";
@@ -38,7 +38,7 @@ export default function BusinessTab() {
     if (!user || !business || !canManage) return;
     setError("");
     try {
-      await recordExpense(user.uid, business.id, business.currency, Math.round(Number(amount) * 100), category, description, method);
+      await recordExpense(user.uid, business.id, business.currency, Math.round(Number(amount) * 100), category, description, method, { id: user.uid, name: user.displayName || user.phoneNumber || "Team member", role });
       setAmount(""); setDescription(""); await load();
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Expense could not be saved."); }
   };
@@ -58,6 +58,8 @@ export default function BusinessTab() {
       <FinancialReport />
     </> : null}
     <SectionTitle title="Businesses" />
+    <SectionTitle title="Customers" />
+    <Action title="View and manage customers" secondary onPress={() => router.push("/(tabs)/customers")} />
     {businesses.map((item) => <Action key={item.id} title={(business?.id === item.id ? "✓ " : "") + item.name + " · " + item.currency + (item.sharedRole ? " · " + item.sharedRole : "")} secondary onPress={() => void selectBusiness(item.id)} />)}
     {business && role === "owner" ? <SubscriptionPanel businessId={business.id} /> : null}
     {business && role !== "owner" ? <Card><Text style={{ color: palette.muted }}>This business uses the owner&apos;s shared subscription; no separate payment is required.</Text></Card> : null}

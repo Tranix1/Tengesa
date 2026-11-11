@@ -26,7 +26,6 @@ import { router } from 'expo-router';
 
 import PhoneInput from '@/components/PhoneInput';
 import { trackEventFirebase, trackScreen } from '@/services/analytics/firebaseAnalystics';
-import { useColorScheme } from 'react-native';
 import { getAuth, signInWithPhoneNumber } from "@react-native-firebase/auth";
 
 
@@ -44,8 +43,6 @@ const Index = ({ setDspLoginOrSignup, setIsSigningUp }: any) => {
     const icon = useThemeColor('icon');
     const accent = useThemeColor('accent');
     const coolGray = useThemeColor('coolGray');
-
-    const colorScheme = useColorScheme();
 
 
     const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -259,7 +256,7 @@ const Index = ({ setDspLoginOrSignup, setIsSigningUp }: any) => {
                     {/* LOGO */}
                     <Image
                         contentFit="contain"
-                        source={colorScheme === "light" ? require('@/assets/trialogo.svg') : require('@/assets/transix_logo_black_bg.png')}
+                        source={require('@/assets/images/tengesa-brand-icon.png')}
                         
                         style={styles.logo}
                     />
@@ -270,7 +267,7 @@ const Index = ({ setDspLoginOrSignup, setIsSigningUp }: any) => {
                             Create Account
                         </ThemedText>
                         <ThemedText style={styles.subHeader} color={coolGray}>
-                            Join Transix and access smart transport solutions
+                            Create your Tengesa account to manage your business
                         </ThemedText>
                     </View>
 

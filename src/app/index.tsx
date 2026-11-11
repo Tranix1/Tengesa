@@ -4,12 +4,12 @@ import {Redirect} from "expo-router";
 import {useAuth} from "@/context/AuthContext";
 import {useBusiness} from "@/context/BusinessContext";
 import Login from "./Account/Login";import SignUp from "./Account/SignUp";
-const ink="#16231d",green="#16734a",muted="#68766e",line="#dce5de",paper="#f5f8f5";
+const ink="#16231d",green="#7656D6",muted="#68766e",line="#dce5de",paper="#f5f8f5";
 export default function Index(){
  const{user,isSignedIn,isLoading,accounts}=useAuth();const{business,loading,addBusiness}=useBusiness();const[signup,setSignup]=useState(false);const[name,setName]=useState("");const[type,setType]=useState<any>("shop");const[error,setError]=useState("");const[currency,setCurrency]=useState("USD");
  if(isLoading||isSignedIn&&loading)return <View style={s.center}><ActivityIndicator color={green}/><Text style={s.muted}>Loading your business…</Text></View>;
  if(!isSignedIn||!user||!accounts.length)return signup?<SignUp setDspLoginOrSignup={()=>setSignup(false)} setIsSigningUp={()=>{}}/>:<Login setDspLoginOrSignup={()=>setSignup(true)}/>;
- if(business)return <Redirect href={"/(tabs)" as any}/>;
+ if(business)return <Redirect href={"/payment" as any} />;
  const create=async()=>{setError("");try{await addBusiness(name,type,currency);}catch(e){setError(e instanceof Error?e.message:"Could not save business. Try again.");}};
  return <ScrollView contentContainerStyle={s.setup}><Text style={s.brand}>TENGESA</Text><Text style={s.title}>Set up your business</Text><Text style={s.muted}>Your products and sales will be kept under this business.</Text><Text style={s.label}>Business name</Text><TextInput value={name} onChangeText={setName} placeholder="e.g. Mbare Grocery" style={s.input}/><Text style={s.label}>Business type</Text><View style={s.choices}>{(["shop","grocery","canteen","butchery","bar","retail"] as const).map(x=><Pressable key={x} onPress={()=>setType(x)} style={[s.choice,type===x&&s.choiceActive]}><Text style={{color:type===x?green:ink,fontWeight:"600",textTransform:"capitalize"}}>{x}</Text></Pressable>)}</View><Text style={s.label}>Currency</Text><View style={s.choices}>{["USD","ZWL","ZAR"].map(x=><Pressable key={x} onPress={()=>setCurrency(x)} style={[s.choice,currency===x&&s.choiceActive]}><Text style={{color:currency===x?green:ink,fontWeight:"600"}}>{x}</Text></Pressable>)}</View>{error?<Text style={s.error}>{error}</Text>:null}<Pressable onPress={()=>void create()} style={s.button}><Text style={s.buttonText}>Create business</Text></Pressable></ScrollView>;
 }

@@ -11,10 +11,10 @@ export default function TabLayout() {
     tabBarStyle: { backgroundColor: "white", borderTopColor: palette.line },
     tabBarIcon: ({ color, size }) => <Ionicons name={route.name === "index" ? "home-outline" : route.name === "sales" ? "cart-outline" : route.name === "stock" ? "cube-outline" : route.name === "customers" ? "people-outline" : "business-outline"} color={color} size={size} />,
   })}>
-    <Tabs.Screen name="index" options={{ title: "Home", tabBarLabel: "Home" }} />
+    <Tabs.Screen name="index" options={{ title: "Tengesa", tabBarLabel: "Home" }} />
     <Tabs.Screen name="sales" options={{ title: "Sales" }} />
     <Tabs.Screen name="stock" options={{ title: "Stock" }} />
-    <Tabs.Screen name="customers" options={{ title: "Customers" }} />
+    <Tabs.Screen name="customers" options={{ href: null }} />
     <Tabs.Screen name="business" options={{ title: "Business" }} />
   </Tabs>;
 }
